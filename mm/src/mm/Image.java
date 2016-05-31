@@ -5,6 +5,7 @@
  */
 package mm;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -34,6 +35,17 @@ public class Image extends JPanel{
         for (int i=0; i<slika.getWidth(); i++){
             for (int j=0; j<slika.getHeight(); j++){
                 shownImage.setRGB(i, j, slika.getRGB(i, j));
+            }
+        }
+        repaint();
+    }
+    
+    
+    public void colorImage(int h, int w) throws Exception{
+        shownImage = new BufferedImage(w,h, BufferedImage.TYPE_INT_RGB);
+        for (int i=0; i<w; i++){
+            for (int j=0; j<h; j++){
+                shownImage.setRGB(i, j,(i*j)%255);
             }
         }
         repaint();
