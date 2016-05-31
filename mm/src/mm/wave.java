@@ -46,6 +46,9 @@ public class wave extends javax.swing.JFrame {
 
         //pogoj za rob
         edgeCondition = (float) 0.0;
+        
+        //ali animacija tece
+        animating = false;
     }
 
     //velikost mreze
@@ -56,6 +59,8 @@ public class wave extends javax.swing.JFrame {
     
     //parametri
     float c, k, h, edgeCondition;
+    
+    boolean animating;
 
     public void update() {
 
@@ -82,14 +87,36 @@ public class wave extends javax.swing.JFrame {
                     //nova pozicija je stara + sprememba
                     newU[i][j] = u[i][j] + v[i][j] * h;
                 }
-
             }
         }
 
         u = newU;
         v = newV;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.printf("%.2f ", u[i][j]);
+            }
+            System.out.println();
+        }
+        
+        System.out.println();
+        
+        try{
+            image.colorImage(image.getHeight(), image.getWidth(), u);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    public void runAnimation() {
+        int i = 5;
+        while (i-- > 0) {
+            update();            
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -122,11 +149,11 @@ public class wave extends javax.swing.JFrame {
         image.setLayout(imageLayout);
         imageLayout.setHorizontalGroup(
             imageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 466, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         imageLayout.setVerticalGroup(
             imageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 346, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         jLabel6.setText("Status bar");
@@ -275,12 +302,20 @@ public class wave extends javax.swing.JFrame {
     }//GEN-LAST:event_input_kActionPerformed
 
     private void buttonOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOKActionPerformed
-        try {
-            // TODO add your handling code here:
-            image.colorImage(image.getHeight(), image.getWidth(), null);
-        } catch (Exception ex) {
-            Logger.getLogger(wave.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                int i = 5;
+                while(i-- > 0) {
+                    runAnimation();
+                    try{
+                        Thread.sleep(200);
+
+                    }
+                    catch (Exception e) {
+                    }
+                 }
+              }
+        }).start();
     }//GEN-LAST:event_buttonOKActionPerformed
 
     /**
