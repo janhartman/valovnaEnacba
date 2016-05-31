@@ -41,11 +41,21 @@ public class Image extends JPanel{
     }
     
     
-    public void colorImage(int h, int w) throws Exception{
-        shownImage = new BufferedImage(w,h, BufferedImage.TYPE_INT_RGB);
-        for (int i=0; i<w; i++){
-            for (int j=0; j<h; j++){
-                shownImage.setRGB(i, j,(i*j)%255);
+    public void colorImage(int h, int w, int[][] matrix) throws Exception{
+        if(matrix == null){
+            shownImage = new BufferedImage(w,h, BufferedImage.TYPE_INT_RGB);
+            for (int i=0; i<w; i++){
+                for (int j=0; j<h; j++){
+                    shownImage.setRGB(i, j,(i*j)%255);
+                }
+            }
+        }
+        else{
+            shownImage = new BufferedImage(w,h, BufferedImage.TYPE_INT_RGB);
+            for (int i=0; i<w; i++){
+                for (int j=0; j<h; j++){
+                    shownImage.setRGB(i, j, matrix[i][j]);
+                }
             }
         }
         repaint();

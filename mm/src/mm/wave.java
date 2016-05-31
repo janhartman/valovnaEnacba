@@ -19,75 +19,6 @@ public class wave extends javax.swing.JFrame {
      */
     public wave() {
         initComponents();
-        //velikost mreze
-        n = 30;
-
-        //pozicije
-        u = new float[n][n];
-
-        //hitrosti
-        v = new float[n][n];
-
-        //utezi
-        w = new float[n][n];
-
-        //zacetni pogoji za u in v
-        //definiraj custom
-        v[n / 2][n / 2] = (float) -10.0;
-
-        //hitrost valovanja
-        c = (float) 1.0;
-
-        //faktor dusenja
-        k = (float) 0.0;
-
-        //razlike med tockami
-        h = (float) 1.0;
-
-        //pogoj za rob
-        edgeCondition = (float) 0.0;
-    }
-
-    //velikost mreze
-    int n;
-
-    //pozicije, hitrosti, utezi
-    float[][] u, v, w;
-    
-    //parametri
-    float c, k, h, edgeCondition;
-
-    public void update() {
-
-        float[][] newU = new float[n][n];
-        float[][] newV = new float[n][n];
-        float[][] a = new float[n][n];
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-
-                //pogoji za rob
-                //nastavljamo
-                if (i == 0 || j == 0 || i == n - 1 || j == n - 1) {
-                    a[i][j] = edgeCondition;
-                    newU[i][j] = edgeCondition;
-                    newV[i][j] = edgeCondition;
-                } //sicer
-                else {
-                    a[i][j] = c * c / h * h * (u[i - 1][j] + u[i + 1][j] + u[i][j - 1] + u[i][j + 1] - 4 * u[i][j]) - k * v[i][j];
-
-                    //nova hitrost je stara + sprememba
-                    newV[i][j] = v[i][j] + a[i][j] * h;
-
-                    //nova pozicija je stara + sprememba
-                    newU[i][j] = u[i][j] + v[i][j] * h;
-                }
-
-            }
-        }
-
-        u = newU;
-        v = newV;
     }
 
     /**
@@ -99,6 +30,7 @@ public class wave extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         imagePanel = new javax.swing.JPanel();
         image = new mm.Image();
@@ -114,7 +46,8 @@ public class wave extends javax.swing.JFrame {
         buttonOK = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Wave equation visualization");
+
+        jLabel1.setText("WAVE");
 
         image.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
 
@@ -137,7 +70,7 @@ public class wave extends javax.swing.JFrame {
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(imagePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE))
+                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, imagePanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -192,11 +125,10 @@ public class wave extends javax.swing.JFrame {
                 .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(controlsLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(input_speed, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(controlsLayout.createSequentialGroup()
-                        .addComponent(jLabel2)
+                        .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(input_speed, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
@@ -256,11 +188,16 @@ public class wave extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(420, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -327,6 +264,7 @@ public class wave extends javax.swing.JFrame {
     private javax.swing.JTextField input_constant;
     private javax.swing.JTextField input_k;
     private javax.swing.JTextField input_speed;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
