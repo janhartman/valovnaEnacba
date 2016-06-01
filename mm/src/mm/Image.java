@@ -31,6 +31,7 @@ public class Image extends JPanel{
             this.setPreferredSize(new Dimension(shownImage.getWidth(), shownImage.getHeight()));
             revalidate();
             g.drawImage(shownImage, 0, 0, null);
+            //g.drawImage(shownImage, 0, 0, getWidth(), getHeight(), this);
         }
     }
     
@@ -77,10 +78,12 @@ public class Image extends JPanel{
             }
         }
         else{
+            //System.out.println("w: "+ w+" h: "+h);
             shownImage = new BufferedImage(w,h, BufferedImage.TYPE_INT_RGB);
-            for (int i=0; i< matrix.length; i++){
-                for (int j=0; j< matrix.length; j++){
-                    shownImage.setRGB(i, j, colors[i][j]);
+            for (int i=0; i< w; i++){
+                for (int j=0; j< h; j++){
+                    //System.out.println("i: "+ i+" j: "+j+" x: " + (i*1.0/w*colors.length) + " y: " +(j*1.0/h*colors.length));
+                    shownImage.setRGB(i, j, colors[(int)(Math.floor(i*1.0/w*matrix.length))][(int)(Math.floor(j*1.0/h*matrix.length))]);
                 }
             }
         }
