@@ -23,29 +23,31 @@ public class wave extends javax.swing.JFrame {
         n = 30;
 
         //pozicije
-        u = new float[n][n];
+        u = new double[n][n];
 
         //hitrosti
-        v = new float[n][n];
+        v = new double[n][n];
 
         //utezi
-        w = new float[n][n];
+        w = new double[n][n];
 
         //zacetni pogoji za u in v
         //definiraj custom
-        v[n / 2][n / 2] = (float) -10.0;
+        v[n / 3][n / 3] =  -1.0;
+        v[2*n/3][2*n/3] = 0.5;
+        
 
         //hitrost valovanja
-        c = (float) 1.0;
+        c =  1.5;
 
         //faktor dusenja
-        k = (float) 0.0;
+        k =  3;
 
         //razlike med tockami
-        h = (float) 1.0;
+        h =  0.5;
 
         //pogoj za rob
-        edgeCondition = (float) 0.0;
+        edgeCondition =  0.0;
         
         //ali animacija tece
         animating = false;
@@ -55,18 +57,20 @@ public class wave extends javax.swing.JFrame {
     int n;
 
     //pozicije, hitrosti, utezi
-    float[][] u, v, w;
+    double[][] u, v, w;
     
     //parametri
-    float c, k, h, edgeCondition;
+    double c, k, h, edgeCondition;
     
     boolean animating;
-
+    
+    
+    //metoda za racunanje novih hitrosti in pozicij
     public void update() {
 
-        float[][] newU = new float[n][n];
-        float[][] newV = new float[n][n];
-        float[][] a = new float[n][n];
+        double[][] newU = new double[n][n];
+        double[][] newV = new double[n][n];
+        double[][] a = new double[n][n];
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -77,9 +81,11 @@ public class wave extends javax.swing.JFrame {
                     a[i][j] = edgeCondition;
                     newU[i][j] = edgeCondition;
                     newV[i][j] = edgeCondition;
-                } //sicer
+                } 
+
+                //sicer
                 else {
-                    a[i][j] = c * c / h * h * (u[i - 1][j] + u[i + 1][j] + u[i][j - 1] + u[i][j + 1] - 4 * u[i][j]) - k * v[i][j];
+                    a[i][j] = c * c / (h * h) * (u[i - 1][j] + u[i + 1][j] + u[i][j - 1] + u[i][j + 1] - 4 * u[i][j]) - k * v[i][j];
 
                     //nova hitrost je stara + sprememba
                     newV[i][j] = v[i][j] + a[i][j] * h;
@@ -89,10 +95,13 @@ public class wave extends javax.swing.JFrame {
                 }
             }
         }
+        
+        
 
         u = newU;
         v = newV;
         
+        /*
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 System.out.printf("%.2f ", u[i][j]);
@@ -101,6 +110,7 @@ public class wave extends javax.swing.JFrame {
         }
         
         System.out.println();
+        */
         
         try{
             image.colorImage(image.getHeight(), image.getWidth(), u);
@@ -111,10 +121,22 @@ public class wave extends javax.swing.JFrame {
     }
 
     public void runAnimation() {
-        int i = 5;
-        while (i-- > 0) {
-            update();            
-        }
+        new Thread(new Runnable() {
+            public void run() {
+                
+                int i = 20;
+                while(i-- > 0) {
+                    update();
+                    
+                    try{
+                        Thread.sleep(50);
+                    }
+                    catch (Exception e) {
+                    }
+                 }
+              }
+        }).start();
+        
     }
     
     /**
@@ -144,6 +166,11 @@ public class wave extends javax.swing.JFrame {
         setTitle("Wave equation visualization");
 
         image.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
+        image.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                imageComponentResized(evt);
+            }
+        });
 
         javax.swing.GroupLayout imageLayout = new javax.swing.GroupLayout(image);
         image.setLayout(imageLayout);
@@ -302,21 +329,18 @@ public class wave extends javax.swing.JFrame {
     }//GEN-LAST:event_input_kActionPerformed
 
     private void buttonOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOKActionPerformed
-        new Thread(new Runnable() {
-            public void run() {
-                int i = 5;
-                while(i-- > 0) {
-                    runAnimation();
-                    try{
-                        Thread.sleep(200);
-
-                    }
-                    catch (Exception e) {
-                    }
-                 }
-              }
-        }).start();
+        
+        runAnimation();
     }//GEN-LAST:event_buttonOKActionPerformed
+
+    private void imageComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_imageComponentResized
+        try{
+            image.colorImage(image.getHeight(), image.getWidth(), u);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_imageComponentResized
 
     /**
      * @param args the command line arguments

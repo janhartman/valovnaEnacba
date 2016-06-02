@@ -109,6 +109,9 @@
                   </Border>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="imageComponentResized"/>
+              </Events>
 
               <Layout>
                 <DimensionLayout dim="0">
