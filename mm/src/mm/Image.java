@@ -22,8 +22,8 @@ public class Image extends JPanel {
 
     private BufferedImage shownImage = null;
 
-    private final static double MIN = 0;
-    private final static double MAX = Integer.MAX_VALUE;
+    private static double MIN = -2;
+    private static double MAX = 2;
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -62,9 +62,7 @@ public class Image extends JPanel {
 
     public void colorImage(int h, int w, double[][] matrix) throws Exception {
         
-        
-        
-        
+        //setMaxMin(matrix);
         
         int[][] colors = new int[matrix.length][matrix.length];
         
@@ -83,5 +81,21 @@ public class Image extends JPanel {
         }
 
         repaint();
+    }
+    
+    public void setMaxMin (double[][] matrix) {
+        double min = Double.MAX_VALUE;
+        double max = -Double.MAX_VALUE;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                if (matrix[i][j] > max)
+                    max = matrix[i][j];
+                else if (matrix[i][j] < min)
+                    min = matrix[i][j];
+            }
+        }
+        
+        MAX = max;
+        MIN = min;
     }
 }

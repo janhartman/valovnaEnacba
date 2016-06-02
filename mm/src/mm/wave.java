@@ -33,24 +33,27 @@ public class wave extends javax.swing.JFrame {
 
         //zacetni pogoji za u in v
         //definiraj custom
-        v[n / 3][n / 3] =  -1.0;
-        v[2*n/3][2*n/3] = 0.5;
+        v[n / 2][n / 2] = - 0.1;
+        u[n/2][n/2] = 1;
+        //v[2*n/3][2*n/3] = 0.5;
         
 
         //hitrost valovanja
-        c =  1.5;
+        c =  0.05;
 
         //faktor dusenja
-        k =  3;
+        k =  0.00001;
 
         //razlike med tockami
-        h =  0.5;
+        h =  0.2;
 
         //pogoj za rob
         edgeCondition =  0.0;
         
         //ali animacija tece
         animating = false;
+        
+        currentTime = System.currentTimeMillis();
     }
 
     //velikost mreze
@@ -64,6 +67,8 @@ public class wave extends javax.swing.JFrame {
     
     boolean animating;
     
+    long currentTime;
+    
     
     //metoda za racunanje novih hitrosti in pozicij
     public void update() {
@@ -71,6 +76,8 @@ public class wave extends javax.swing.JFrame {
         double[][] newU = new double[n][n];
         double[][] newV = new double[n][n];
         double[][] a = new double[n][n];
+        long newTime = System.currentTimeMillis();
+        int dt = (int) (newTime - currentTime);
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -85,32 +92,28 @@ public class wave extends javax.swing.JFrame {
 
                 //sicer
                 else {
-                    a[i][j] = c * c / (h * h) * (u[i - 1][j] + u[i + 1][j] + u[i][j - 1] + u[i][j + 1] - 4 * u[i][j]) - k * v[i][j];
+                    a[i][j] = c * c / (h * h) * (u[i - 1][j] + u[i + 1][j] + u[i][j - 1] + u[i][j + 1] - 4 * u[i][j]) - ( k  * v[i][j]);
 
+                    
                     //nova hitrost je stara + sprememba
-                    newV[i][j] = v[i][j] + a[i][j] * h;
+                    newV[i][j] = v[i][j] + a[i][j] * (double)dt / 500.0 ;
 
                     //nova pozicija je stara + sprememba
-                    newU[i][j] = u[i][j] + v[i][j] * h;
+                    newU[i][j] = u[i][j] + v[i][j] * (double)dt / 500.0;
                 }
             }
         }
+        
+        currentTime = newTime;
         
         
 
         u = newU;
         v = newV;
         
-        /*
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                System.out.printf("%.2f ", u[i][j]);
-            }
-            System.out.println();
-        }
+      // printMatrix();
         
-        System.out.println();
-        */
+        
         
         try{
             image.colorImage(image.getHeight(), image.getWidth(), u);
@@ -124,18 +127,32 @@ public class wave extends javax.swing.JFrame {
         new Thread(new Runnable() {
             public void run() {
                 
-                int i = 20;
-                while(i-- > 0) {
+                int i = 100;
+                while(true) {
                     update();
                     
                     try{
                         Thread.sleep(50);
                     }
                     catch (Exception e) {
+                        e.printStackTrace();
                     }
                  }
               }
         }).start();
+        
+    }
+    
+    public void printMatrix () {
+         
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.printf("%.2f ", u[i][j]);
+            }
+            System.out.println();
+        }
+        
+        System.out.println();
         
     }
     
