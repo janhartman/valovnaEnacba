@@ -26,7 +26,7 @@ function valovna ()
   dt = 0.001;
   
   % nacin robov: 0 - fiksni, 1 - prosti
-  edgeCondition = 0;
+  edgeCondition = 1;
 
   % maksimalno stevilo iteracij
   stIteracij = 100000;
@@ -35,8 +35,11 @@ function valovna ()
   rungeKutta = 0;
   
   % zacetni pogoji
+  v (n/3-3:n/3+3, 2*n/3-3:2*n/3+3) = 2;
+  v (2*n/3-3:2*n/3+3, n/3-3:n/3+3) = -2;
+  
   okolica = 0;
-  zacetniPogoj = 1;
+  zacetniPogoj = 999;
   
   if okolica == 1
    w(30:50, 30:50) = 0;
@@ -113,25 +116,25 @@ function valovna ()
       a = c^2/h^2 * ([u(2:end, :); zeros(1, n)] + [zeros(1, n); u(1:end-1, :)] + [u(:, 2:end) zeros(n, 1)] + [zeros(n, 1) u(:, 1:end-1)] - 4*u) - k*v;
      
       if (edgeCondition == 0)        
-        newV = v + a*dt;
-        newU = u + v*dt;
+        vNew = v + a*dt;
+        uNew = u + v*dt;
         
         uNew(1, :) = uNew(end, :) = uNew(:, 1) = uNew(:, end) = edgeCondition;
         vNew(1, :) = vNew(end, :) = vNew(:, 1) = vNew(:, end) = edgeCondition;
       
       else
-        a(1,:) = c^2/h^2 * (u(2, :) + [0, u(1,2:end)] + [u(1,1:end-1), 0] -4*u(1,:)) - k*v(1,:);
-        a(end,:) = c^2/h^2 * (u(end-1, :) + [0, u(end,2:end)] + [u(end,1:end-1), 0] -4*u(end,:)) -k*v(end,:) ;
-        a(:,1) = c^2/h^2 * (u(:,2) + [0;u(2:end,1)] + [u(1:end-1,1); 0] -4*u(:,1)) -k*v(:,1) ; 
-        a(:,end) = c^2/h^2 * (u(:,end-1) + [0;u(2:end,end)] + [u(1:end-1,end); 0] -4*u(:,end)) -k*v(:,end) ;
+        a(1,:) = c^2/h^2 * (u(2, :) + [0, u(1,2:end)] + [u(1,1:end-1), 0] -3*u(1,:)) - k*v(1,:);
+        a(end,:) = c^2/h^2 * (u(end-1, :) + [0, u(end,2:end)] + [u(end,1:end-1), 0] -3*u(end,:)) -k*v(end,:) ;
+        a(:,1) = c^2/h^2 * (u(:,2) + [0;u(2:end,1)] + [u(1:end-1,1); 0] -3*u(:,1)) -k*v(:,1) ; 
+        a(:,end) = c^2/h^2 * (u(:,end-1) + [0;u(2:end,end)] + [u(1:end-1,end); 0] -3*u(:,end)) -k*v(:,end) ;
         
-        a(1,1) = c^2/h^2 * (u(2,1) + u(1,2) - 3*u(1,1)) -k*v(1,1);
-        a(1, end) = c^2/h^2 * (u(1,end-1) + u(2,end) - 3*u(1,end)) -k*v(1,end);
-        a(end, 1) = c^2/h^2 * (u(end-1,1) + u(end,2) - 3*u(end,1)) -k*v(end,1);
-        a(end, end) = c^2/h^2 * (u(end,end-1) + u(end-1,end) - 3*u(end,end)) -k*v(end,end);
+        a(1,1) = c^2/h^2 * (u(2,1) + u(1,2) - 2*u(1,1)) -k*v(1,1);
+        a(1, end) = c^2/h^2 * (u(1,end-1) + u(2,end) - 2*u(1,end)) -k*v(1,end);
+        a(end, 1) = c^2/h^2 * (u(end-1,1) + u(end,2) - 2*u(end,1)) -k*v(end,1);
+        a(end, end) = c^2/h^2 * (u(end,end-1) + u(end-1,end) - 2*u(end,end)) -k*v(end,end);
      
-        newV = v + a*dt;
-        newU = u + v*dt;
+        vNew = v + a*dt;
+        uNew = u + v*dt;
       endif
       
     else
@@ -140,17 +143,17 @@ function valovna ()
       k3 = dt*c^2/h^2 * ([u(2:end, :); zeros(1, n)] + [zeros(1, n); u(1:end-1, :)] + [u(:, 2:end) zeros(n, 1)] + [zeros(n, 1) u(:, 1:end-1)] - 4*u) - k*v;
       k4 = dt*c^2/h^2 * ([u(2:end, :); zeros(1, n)] + [zeros(1, n); u(1:end-1, :)] + [u(:, 2:end) zeros(n, 1)] + [zeros(n, 1) u(:, 1:end-1)] - 4*u) - k*v;
       
-      newV = v + (k1 + 2*k2 + 2*k3 + k4)/6;
-      newU = u + dt*v;
+      vNew = v + (k1 + 2*k2 + 2*k3 + k4)/6;
+      uNew = u + dt*v;
       
     endif
     
-    u = newU;
-    v = newV;
+    u = uNew;
+    v = vNew;
     u = u.*w;
     i += 1;
     
-    if (mod(i, 15) == 0)
+    if (mod(i, 10) == 0)
       
       m = u;
       if okolica == 1 
