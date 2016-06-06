@@ -39,10 +39,10 @@ public class wave extends javax.swing.JFrame {
         
 
         //hitrost valovanja
-        c =  0.05;
+        c =  0.1;
 
         //faktor dusenja
-        k =  0.00001;
+        k =  0.001;
 
         //razlike med tockami
         h =  0.2;
@@ -96,10 +96,10 @@ public class wave extends javax.swing.JFrame {
 
                     
                     //nova hitrost je stara + sprememba
-                    newV[i][j] = v[i][j] + a[i][j] * (double)dt / 500.0 ;
+                    newV[i][j] = v[i][j] + a[i][j] * (double)dt / 1000.0 ;
 
                     //nova pozicija je stara + sprememba
-                    newU[i][j] = u[i][j] + v[i][j] * (double)dt / 500.0;
+                    newU[i][j] = u[i][j] + v[i][j] * (double)dt / 1000.0;
                 }
             }
         }
