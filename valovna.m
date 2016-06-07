@@ -30,18 +30,26 @@ function valovna (zacetniPogoj, okolica)
   dt = 0.001;
   
   % nacin robov: 0 - fiksni, 1 - prosti
-  rob = 1;
+  rob = 0;
 
   % maksimalno stevilo iteracij
-  stIteracij = 100000;
+  stIteracij = 10000;
   
-  % uporaba Eulerjeve oziroma Runge-Kutta metode: 0 - Euler, 1 - RK4
-  rungeKutta = 0;
+  % uporaba metode za resevanje: 0 - Euler, 1 - RK4, 2 - Leapfrog
+  metoda = 1;
   
   % zacetni pogoj: kaksni bodo valovi na zacetku : od 0 do 4
   
   % okolica: kaksen bo nepremicen del: od 0 do 4
   
+  % ali bomo merili energijo
+  energija = 0;
+  
+  if (energija == 1)
+    % matriki za shranjevanje energij
+    eN = zeros(1, stIteracij);
+    eK = zeros(1, stIteracij);
+  endif
  
   % nastavljanje utezi
   if okolica == 1
@@ -117,33 +125,24 @@ function valovna (zacetniPogoj, okolica)
     
   
   % glavna zanka 
-  % uporabljamo for, da lahko poljubno nastavimo stevilo iteracij, ki se izvedejo
-  
-  for i = 0:stIteracij
+  for i = 1:stIteracij
     
     uNew = zeros(n);
     vNew = zeros(n);
     
     % Eulerjeva metoda
-    if (rungeKutta == 0)
+    if (metoda == 0)
         a = pospesek(u, v, c, h, k, n, rob);
         vNew = v + a*dt;
         uNew = u + v*dt;
         
-        % implicitna Eulerjeva metoda (zelo popravi rezultat)
+        % implicitna Eulerjeva metoda (korektor, da simulacija ne podivja)
         a = pospesek(uNew, vNew, c, h, k, n, rob);
         vNew = v + a*dt;
         uNew = u + v*dt;
-        
-     
-      % robovi so fiksirani
-      if (rob == 0)          
-        uNew(1, :) = uNew(end, :) = uNew(:, 1) = uNew(:, end) = rob;
-        vNew(1, :) = vNew(end, :) = vNew(:, 1) = vNew(:, end) = rob;                
-      endif
-      
+           
     % Runge-Kutta metoda 4. reda
-    else
+    elseif (metoda == 1)
       k1 = dt*c^2/h^2 * ([u(2:end, :); zeros(1, n)] + [zeros(1, n); u(1:end-1, :)] + [u(:, 2:end) zeros(n, 1)] + [zeros(n, 1) u(:, 1:end-1)] - 4*u) - k*v;
       k2 = dt*c^2/h^2 * ([u(2:end, :); zeros(1, n)] + [zeros(1, n); u(1:end-1, :)] + [u(:, 2:end) zeros(n, 1)] + [zeros(n, 1) u(:, 1:end-1)] - 4*u) - k*v;
       k3 = dt*c^2/h^2 * ([u(2:end, :); zeros(1, n)] + [zeros(1, n); u(1:end-1, :)] + [u(:, 2:end) zeros(n, 1)] + [zeros(n, 1) u(:, 1:end-1)] - 4*u) - k*v;
@@ -152,6 +151,24 @@ function valovna (zacetniPogoj, okolica)
       vNew = v + (k1 + 2*k2 + 2*k3 + k4)/6;
       uNew = u + v*dt;
       
+    % Leapfrog
+    elseif (metoda == 2)
+      a = pospesek(u, v, c, h, k, n, rob);
+      if (mod(i, 2) == 0)
+        vNew = v + a*dt;
+        uNew = u;
+      else
+        uNew = u + v*dt;
+        vNew = v;
+      endif
+      
+      
+    endif
+    
+    % robovi so fiksirani
+    if (rob == 0)         
+      uNew(1, :) = uNew(end, :) = uNew(:, 1) = uNew(:, end) = rob;
+      vNew(1, :) = vNew(end, :) = vNew(:, 1) = vNew(:, end) = rob;                
     endif
     
     % prepisovanje starih matrik v nove in upostevanje utezi
@@ -188,9 +205,22 @@ function valovna (zacetniPogoj, okolica)
     
     endif
     
+    if (energija == 1)
+      % zapis energij
+      eN(i) = nihajnaEnergija(u);
+      eK(i) = kineticnaEnergija(v);
+    endif
     
   endfor
   
+  if (energija == 1)
+    % izris grafov energij
+    eN = eN(eN < 1000);
+    plot(eN);
+    hold on
+    plot(eK, 'r');
+    hold off
+  endif
   
 endfunction
 
@@ -221,5 +251,5 @@ endfunction
 
 % funkcija izracuna kineticno energijo
 function W = kineticnaEnergija (v)
-  W = sum(sum(v.^2));
+  W = sum(sum(v.^2))/2;
 endfunction
