@@ -30,27 +30,19 @@ function valovna (zacetniPogoj, okolica)
   dt = 0.001;
   
   % nacin robov: 0 - fiksni, 1 - prosti
-  rob = 0;
+  rob = 1;
 
   % maksimalno stevilo iteracij
   stIteracij = 10000;
   
   % uporaba metode za resevanje: 0 - Euler, 1 - RK4, 2 - Leapfrog
-  metoda = 1;
+  metoda = 0;
   
   % zacetni pogoj: kaksni bodo valovi na zacetku : od 0 do 4
   
   % okolica: kaksen bo nepremicen del: od 0 do 4
   
-  % ali bomo merili energijo
-  energija = 0;
-  
-  if (energija == 1)
-    % matriki za shranjevanje energij
-    eN = zeros(1, stIteracij);
-    eK = zeros(1, stIteracij);
-  endif
- 
+
   % nastavljanje utezi
   if okolica == 1
    w(30:50, 30:50) = 0;
@@ -98,11 +90,7 @@ function valovna (zacetniPogoj, okolica)
       zid1 = zeros([2,round((n/2)-5)]);   
       zid1(1:2, 1:round((n/2)-5)) = 0.5;   
   endif 
-  
-  % zid z dvema luknjama - dopolni
-  % if ...
-  
-  % endif
+    
  
   
   % Razlicni zacetni pogoji:
@@ -205,22 +193,9 @@ function valovna (zacetniPogoj, okolica)
     
     endif
     
-    if (energija == 1)
-      % zapis energij
-      eN(i) = nihajnaEnergija(u);
-      eK(i) = kineticnaEnergija(v);
-    endif
     
   endfor
   
-  if (energija == 1)
-    % izris grafov energij
-    eN = eN(eN < 1000);
-    plot(eN);
-    hold on
-    plot(eK, 'r');
-    hold off
-  endif
   
 endfunction
 
@@ -245,11 +220,6 @@ function a = pospesek (u, v, c, h, k, n, rob)
   endfunction
 
 % funkcija izracuna energijo nihanja
-function W = nihajnaEnergija (u)
-  W = sum(sum(u.^2));
-endfunction
-
-% funkcija izracuna kineticno energijo
-function W = kineticnaEnergija (v)
-  W = sum(sum(v.^2))/2;
+function W = energija (t)
+  W = sum(sum(t.^2));
 endfunction
